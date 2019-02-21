@@ -1,10 +1,14 @@
-const express = require('express')
-const router = express.Router();
+// Instancia um objeto do MongoDB
 const User = require('../models/user')
 
+// Instancia do router para '/admin'
+const express = require('express')
+const router = express.Router();
+router
+
 // Rota para inserção de dados
-router.post('/', (req, res, next) => {
-    console.log('post admin')
+    .post('/', (req, res, next) => {
+    console.log('post /admin')
     let newUser = new User({
         "login": req.body.login,
         "senha": req.body.senha,
@@ -14,7 +18,7 @@ router.post('/', (req, res, next) => {
     // Função addUser from user.js 
     User.addUser(newUser, (err, user) => {
         if (err) {
-        	console.log(err)
+            console.log(err)
             res.json({
                 message: 'Usuário NÃO registrado',
                 erro: err.toString()
@@ -28,18 +32,41 @@ router.post('/', (req, res, next) => {
 })
 
 // Rota para extração de dados
-router.get('/', (req, res, next) => {
-    console.log('get all admin')
-    User.getUsers((err, user) => {
+.get('/', (req, res, next) => {
+    console.log('get all /admin')
+
+    // Função listUsers from user.js 
+    User.listUsers((err, user) => {
         console.log(user)
         if (err) {
             res.json({
-                success: false,
-                msg: 'failed to find user'
+                erro: err,
+                message: 'Usuários não encontrados'
             })
         } else {
             res.json({
                 user
+            })
+        }
+    });
+})
+
+// Rota para remoção de dados
+.delete('/', (req, res, next) => {
+    console.log('delete /admin')
+
+    // Função listUsers from user.js
+    let login = req.body.login; 
+    User.delUser(login, (err, user) => {
+        console.log(user)
+        if (err) {
+            res.json({
+                message: 'Usuário nao encontrado pra remoção'
+            })
+        } else {
+            res.json({
+                message: `Usuário ${login} removido`
+                
             })
         }
     });

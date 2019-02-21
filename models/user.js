@@ -14,16 +14,28 @@ const UserSchema = mg.Schema({
         type: String,
         required: true
     },
-    created: { type: Date },
-    updated: { type: Date, default: Date.now },
+    created: {
+        type: Date
+    },
+    updated: {
+        type: Date,
+        default: Date.now
+    },
 });
 
 const User = module.exports = mg.model('User', UserSchema);
 
-module.exports.getUsers = function(callback) {
-    User.find({},callback)
+module.exports.listUsers = function(callback) {
+    User.find({}, callback)
 }
 module.exports.addUser = function(newUser, callback) {
     newUser.created = new Date()
     newUser.save(callback)
+}
+
+module.exports.delUser = function(username, callback) {
+    let user = {
+        login: username
+    }
+    User.deleteOne(user, callback)
 }
