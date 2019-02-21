@@ -55,8 +55,8 @@ router
 .delete('/', (req, res, next) => {
     console.log('delete /admin')
 
-    // Função listUsers from user.js
-    let login = req.body.login; 
+    // Função delUser from user.js
+    let login = req.body.login;
     User.delUser(login, (err, user) => {
         console.log(user)
         if (err) {
@@ -66,12 +66,31 @@ router
         } else {
             res.json({
                 message: `Usuário ${login} removido`
-                
+
             })
         }
     });
 })
 
+// Rota para update de dados
+.put('/', (req, res, next) => {
+    console.log('put /admin')
+
+    // Função updateUser from user.js
+    let login = req.body.login;
+    User.updateUser(login, (err, user) => {
+        console.log(user)
+        if (err) {
+            res.json({
+                message: 'Usuário nao encontrado'
+            })
+        } else {
+            res.json({
+                message: 'Dados alterados com sucesso'
+            })
+        }
+    });
+});
 
 
-module.exports = router
+module.exports = router;

@@ -4,6 +4,9 @@ const config = require('../config/db')
 const UserSchema = mg.Schema({
     login: {
         type: String,
+        unique: true,
+        index: true,
+        lowercase: true,
         required: true
     },
     senha: {
@@ -33,9 +36,21 @@ module.exports.addUser = function(newUser, callback) {
     newUser.save(callback)
 }
 
-module.exports.delUser = function(username, callback) {
+module.exports.delUser = function(login, callback) {
     let user = {
-        login: username
+        login: login
     }
     User.deleteOne(user, callback)
+}
+
+module.exports.updateUser = function(login1, callback) {
+    User.findOneAndUpdate({
+        login: "aloha"
+    }, {
+        $set: {
+            name: "Naomi"
+        }
+    }, {
+        new: true
+    }, callback);
 }
