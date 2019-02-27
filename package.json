@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@angular/cli": "^7.3.3",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "helmet": "^3.15.1",
     "mongoose": "^5.4.13",
     "nodemon": "^1.18.10"
   }

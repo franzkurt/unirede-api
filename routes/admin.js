@@ -4,92 +4,99 @@ const User = require('../models/user')
 // Instancia do router para '/admin'
 const express = require('express')
 const router = express.Router();
-router
 
 // Rota para inserção de dados
-    .post('/', (req, res, next) => {
+router.post('/', (req, res, next) => {
     console.log('post /admin')
-    let newUser = new User({
+    newUser = new User({
         "login": req.body.login,
         "senha": req.body.senha,
-        "tipo_acesso": req.body.tipo_acesso,
+        "permissao": req.body.permissao,
+        "created": new Date()
     })
-
-    // Função addUser from user.js 
-    User.addUser(newUser, (err, user) => {
-        if (err) {
-            console.log(err)
-            res.json({
-                message: 'Usuário NÃO registrado',
-                erro: err.toString()
-            })
-        } else {
-            res.json({
-                message: 'Usuário registrado com sucesso',
-            })
-        }
-    });
+    newUser.save()
+        .then((listUsers) => {
+            res.json(listUsers);
+        })
+        .catch((err) => {
+            res.json();
+        })
 })
 
 // Rota para extração de dados
-.get('/', (req, res, next) => {
-    console.log('get all /admin')
+.get('/:id', (req, res, next) => {
+    User.find({login:req.params.id})
+        .then((listUsers) => {
+            res.json(listUsers);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+})
 
-    // Função listUsers from user.js 
-    User.listUsers((err, user) => {
-        console.log(user)
-        if (err) {
-            res.json({
-                erro: err,
-                message: 'Usuários não encontrados'
-            })
-        } else {
-            res.json({
-                user
-            })
-        }
-    });
+.get('/', (req, res, next) => {
+    User.find()
+        .then((listUsers) => {
+            res.json(listUsers);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
 })
 
 // Rota para remoção de dados
 .delete('/', (req, res, next) => {
-    console.log('delete /admin')
-
-    // Função delUser from user.js
     let login = req.body.login;
-    User.delUser(login, (err, user) => {
-        console.log(user)
-        if (err) {
+    User.deleteOne(login)
+        .then(user => {
             res.json({
-                message: 'Usuário nao encontrado pra remoção'
-            })
-        } else {
+                message: 'Dados alterados com sucesso'
+            });
+        })
+        .catch(err => {
             res.json({
-                message: `Usuário ${login} removido`
-
+                message: 'Usuário nao encontrado'
             })
-        }
-    });
+        })
 })
 
 // Rota para update de dados
 .put('/', (req, res, next) => {
-    console.log('put /admin')
+    let oldLogin, newLogin
+    
+    if (req.body.hasOwnProperty('old_login') && req.body.old_login !== ""){
+        oldLogin = req.body.old_login;
+    }
+    if (req.body.hasOwnProperty('new_login') && req.body.new_login !== ""){
+        newLogin = req.body.new_login;
+    }
 
-    // Função updateUser from user.js
-    let login = req.body.login;
-    User.updateUser(login, (err, user) => {
-        console.log(user)
-        if (err) {
+    updateUser = function(oldLogin, newLogin) {
+        return User.findOneAndUpdate({
+            login: oldLogin
+        }, {
+            $set: {
+                login: newLogin
+            }
+        }, {
+            // retorna o novo valor do banco
+            new: true,
+            // valida os dados do objeto novamente
+            runValidators: true
+        });
+    }
+
+    updateUser(oldLogin, newLogin)
+        .then(user => {
+            res.json({
+                message: 'Dados alterados com sucesso'
+            });
+        })
+        .catch(err => {
             res.json({
                 message: 'Usuário nao encontrado'
             })
-        } else {
-            res.json({
-                message: 'Dados alterados com sucesso'
-            })
-        }
-    });
+        });
 });
 
 

@@ -1,7 +1,7 @@
-const mg = require('mongoose')
+const mongoose = require('mongoose')
 const config = require('../config/db')
 
-const UserSchema = mg.Schema({
+const UserSchema = mongoose.Schema({
     login: {
         type: String,
         unique: true,
@@ -13,12 +13,13 @@ const UserSchema = mg.Schema({
         type: String,
         required: true
     },
-    tipo_acesso: {
+    permissao: {
         type: String,
         required: true
     },
     created: {
-        type: Date
+        type: Date,
+        default: Date.now
     },
     updated: {
         type: Date,
@@ -26,31 +27,5 @@ const UserSchema = mg.Schema({
     },
 });
 
-const User = module.exports = mg.model('User', UserSchema);
+const User = module.exports = mongoose.model('User', UserSchema);
 
-module.exports.listUsers = function(callback) {
-    User.find({}, callback)
-}
-module.exports.addUser = function(newUser, callback) {
-    newUser.created = new Date()
-    newUser.save(callback)
-}
-
-module.exports.delUser = function(login, callback) {
-    let user = {
-        login: login
-    }
-    User.deleteOne(user, callback)
-}
-
-module.exports.updateUser = function(login1, callback) {
-    User.findOneAndUpdate({
-        login: "aloha"
-    }, {
-        $set: {
-            name: "Naomi"
-        }
-    }, {
-        new: true
-    }, callback);
-}
